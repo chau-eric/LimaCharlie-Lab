@@ -27,7 +27,7 @@ More importantly, I can also see the victim's running processes using <b>ps -T</
 </p>
 From the Ubuntu VM, I can also execute the command <b>procdump -n lsass.exe -s lsass.dmp</b>. This is a common method to obtain a victim's OS credentials in the Windows Local Security Authority Subsystem Service (LSASS) and save it locally to your Sliver C2 server.
 
-<h2>Detection on LimaCharlie (part 1)</h2>
+<h2>Detection on LimaCharlie</h2>
 Using LimaCharlie to view all processes on the Windows VM, I can see the C2 payload is one of the only unsigned processes running. I can also see that it's active on the network and its source and destination IP.
 <p align="center"><img width="1039" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/b4baf96b-a202-4215-98a1-8d6ad61f6bc4"><br/>
 </p>
@@ -38,5 +38,9 @@ Now that I know what the event looks like, I can create a detection & response r
 <p align="center"><img width="657" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/100efa99-8130-409a-b835-ef36fa4fdfb6"><br/>
 </p>
 This rule will detect SENSITIVE_PROCESS_ACCESS events where the process ends with "lsass.exe". When detected, it will respond by generating a report called "LSASS Access."
+<p align="center"><img width="1072" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/ac196e3e-1454-40b5-8a53-215581b75be6"><br/>
+</p>
+After running the <b>procdump -n lsass.exe -s lsass.dmp</b> command again from the attacker, I can see the threat detected using the signature I just created.
 
-<h2>Adversary (part 2)</h2>
+<h2>Blocking attacks</h2>
+**WIP**
