@@ -60,4 +60,10 @@ The next time it detects <b>vssadmin delete shadows /all</b> being executed, Lim
 This time after executing the command <b>vssadmin delete shadows /all,</b> any further commands will fail to return anything. This is because the parent process has been terminated by LimaCharlie, and the system shell is no longer active. The attacker is now unable to complete their attack.
 
 <h2>Ransomware Simulation</h2>
-I will really put my D&R rule to the test using a [ransomware simulator](https://github.com/NextronSystems/ransomware-simulator) by Nextron Systems. 
+I will further test and refine my D&R rule to the test using a <a href="https://github.com/NextronSystems/ransomware-simulator">ransomware simulator</a> by Nextron Systems. A successful execution of the ransomware simulation will delete all Volume Shadow Copies, create and encrypt 10,000 files, and leave a ransomware note (.txt file). Let's run it on the victim machine with my D&R rule active.
+<p align="center"><img width="466" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/12bd96d3-8aa4-47ed-a491-8586341c2e22">
+<br/></p>
+As you can see, the ransomware simulator was able to successfully complete all steps, which means my D&R rule failed to detect and kill the process. This is because the detection rule created by LimaCharlie is looking for the exact string "<b>delete shadows /all</b>" when there are other ways to execute the command. I'm going to instead refine the detection rule to look for vssadmin commands that contain "delete," "shadows," and "/all." Now let's run the simulator again.
+<p align="center"><img width="451" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/3cc651e3-f474-4d3f-9299-b52aef10cd59">
+<br/></p>
+Now the ransomware simulator stops after deleting the Volume Shadow Copies, and I have successfully prevented a ransomware attack.
