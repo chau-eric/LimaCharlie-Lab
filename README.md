@@ -42,5 +42,19 @@ This rule will detect SENSITIVE_PROCESS_ACCESS events where the process ends wit
 </p>
 After running the <b>procdump -n lsass.exe -s lsass.dmp</b> command again from the attacker, I can see the threat detected using the signature I just created.
 
-<h2>Blocking attacks</h2>
-**WIP**
+<h2>Adversary (part 2)</h2>
+The command I will be using this time is <b>vssadmin delete shadows /all.</b> This is a common command for attackers to use to delete Volume Shadow Copies, which would help a victim recover files in the case of a ransomware attack. It is very rare for healthy systems to need this command.
+<p align="center"><img width="430" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/a93c58d2-8729-4f28-87be-f75d93183d24">
+<br/></p>
+From my C2 session on the attacker machine, I can shell into the victim and run the command to delete all Volume Shadow Copies. I also follow it with the <b>whoami</b> command to confirm that I still have an active system shell. In this example, my victim actually doesn't have any Volume Shadow Copies, but the process is still the same.
+
+<h2>Blocking attacks with LimaCharlie</h2>
+This section will demonstrate blocking attacks instead of generating an alert. LimaCharlie's default rules can already detect <b>vssadmin delete shadows /all.</b> This lets me easily create a D&R rule off of the signature.
+<p align="center"><img width="1083" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/b00af5e6-af99-4b32-9f5c-8797a9035156">
+  <br/></p>
+<p align="center"><img width="434" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/1125ff39-7e2b-4f4b-b167-7faff9d60dee">
+<br/></p>
+The next time it detects <b>vssadmin delete shadows /all</b> being executed, LimaCharlie will create a report in the "Detections" tab and kill the parent process that executed the command. I'll test this by executing the command again from the attacker machine.
+<p align="center"><img width="413" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/8a2100b7-5277-4a40-b807-955f796f3174">
+<br/></p>
+This time after executing the command <b>vssadmin delete shadows /all,</b> any further commands will fail to return anything. This is because the parent process has been terminated by LimaCharlie, and the system shell is no longer active. The attacker is now unable to complete their attack.
