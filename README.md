@@ -58,3 +58,6 @@ The next time it detects <b>vssadmin delete shadows /all</b> being executed, Lim
 <p align="center"><img width="413" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/8a2100b7-5277-4a40-b807-955f796f3174">
 <br/></p>
 This time after executing the command <b>vssadmin delete shadows /all,</b> any further commands will fail to return anything. This is because the parent process has been terminated by LimaCharlie, and the system shell is no longer active. The attacker is now unable to complete their attack.
+
+<h2>Ransomware Simulation</h2>
+I will really put my D&R rule to the test using a [ransomware simulator](https://github.com/NextronSystems/ransomware-simulator) by Nextron Systems. 
