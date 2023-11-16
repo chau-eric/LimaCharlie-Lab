@@ -9,7 +9,8 @@ This project consists of setting up 2 VMs, emulating an adversary, and blocking 
 - <b>LimaCharlie</b>
 - <b>VMware Workstation</b>
 - <b>Sysmon</b>
-- <b>Sliver</b>
+- <b><a href="https://github.com/BishopFox/sliver/wiki">Sliver</a></b>
+- <b><a href="https://github.com/NextronSystems/ransomware-simulator">Quickbuck</a></b>
 
 <h2>Environment</h2>
 
@@ -17,7 +18,7 @@ This project consists of setting up 2 VMs, emulating an adversary, and blocking 
 - <b>Windows 11 VMWare</b>
 
 <h2>Project setup:</h2>
-There are two machines involved in this project: a Windows 11 VM and an Ubuntu Server 22.04.1. The Windows 11 VM will be my "victim" system that has Microsoft Defender disabled, and Sysmon and LimaCharlie installed. LimaCharlie has its own Endpoint Detection & Response telemetry, as well as the capability to ship Sysmon event logs. The Ubuntu machine is going to launch the adversarial attacks. It will do this using Sliver, a command-and-control (C2) framework.
+There are two machines involved in this project: a Windows 11 VM and an Ubuntu Server 22.04.1. The Windows 11 VM will be my "victim" system that has Microsoft Defender disabled, and Sysmon and LimaCharlie installed. LimaCharlie has its own Endpoint Detection & Response telemetry, as well as the capability to ship Sysmon event logs. The Ubuntu machine is going to launch the adversarial attacks. It will do this using <a href="https://github.com/BishopFox/sliver/wiki">Sliver</a>, a command-and-control (C2) framework by BishopFox.
 <h2>Adversary (part 1)</h2>
 I created the C2 payload (named "SPONTANEOUS_LATEX.exe") on the Ubuntu VM and downloaded it directly onto the Windows VM. After executing the payload, I could now interact directly with the C2 session on the Windows VM. Executing the commands <b>info</b> and <b>whoami</b> gives me basic information about the session and the user.
 <p align="center"><img width="1278" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/0aae3673-1070-4893-9086-552ab90d2c00"><br/>
@@ -60,7 +61,7 @@ The next time it detects <b>vssadmin delete shadows /all</b> being executed, Lim
 This time after executing the command <b>vssadmin delete shadows /all,</b> any further commands will fail to return anything. This is because the parent process has been terminated by LimaCharlie, and the system shell is no longer active. The attacker is now unable to complete their attack.
 
 <h2>Ransomware Simulation</h2>
-I will further test and refine my D&R rule to the test using a <a href="https://github.com/NextronSystems/ransomware-simulator">ransomware simulator</a> by Nextron Systems. A successful execution of the ransomware simulation will delete all Volume Shadow Copies, create and encrypt 10,000 files, and leave a ransomware note (.txt file). Let's run it on the victim machine with my D&R rule active.
+I will further test and refine my D&R rule to the test using a ransomware simulator, <a href="https://github.com/NextronSystems/ransomware-simulator">Quickbuck</a>, by Nextron Systems. A successful execution of the ransomware simulation will delete all Volume Shadow Copies, create and encrypt 10,000 files, and leave a ransomware note (.txt file). Let's run it on the victim machine with my D&R rule active.
 <p align="center"><img width="466" alt="Untitled" src="https://github.com/chau-eric/LimaCharlie-Lab/assets/76719902/12bd96d3-8aa4-47ed-a491-8586341c2e22">
 <br/></p>
 As you can see, the ransomware simulator was able to successfully complete all steps, which means my D&R rule failed to detect and kill the process. This is because the detection rule created by LimaCharlie is looking for the exact string "<b>delete shadows /all</b>" when there are other ways to execute the command. I'm going to instead refine the detection rule to look for vssadmin commands that contain "delete," "shadows," and "/all." Now let's run the simulator again.
